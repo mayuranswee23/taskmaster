@@ -1,6 +1,11 @@
+//select the form element
 var formEl = document.querySelector("#task-form");
+// selects unordered list
 var taskToDo = document.querySelector("#tasks-to-do");
+var taskInProgress = document.querySelector('#tasks-in-progress');
+var completedTasks = document.querySelector('#tasks-completed')
 var taskID = 0;
+//selected kanban board 
 var pageContent = document.querySelector('#page-content')
 
 
@@ -77,15 +82,15 @@ deleteButton.textContent = "Delete";
 deleteButton.className = "btn delete-btn";
 deleteButton.setAttribute('data-task-id', taskID)
 
-//append btns to task
-actionContainer.appendChild(editButton);
-actionContainer.appendChild(deleteButton);
-
+//create select options
 var statusSelect = document.createElement('select');
 statusSelect.className = "select-status";
 statusSelect.setAttribute("name", "status-change");
 statusSelect.setAttribute("data-task-id", taskID)
 
+//append btns to task
+actionContainer.appendChild(editButton);
+actionContainer.appendChild(deleteButton);
 actionContainer.appendChild(statusSelect);
 
 var statusChoices = ["To Do", "In-Progress", "Completed"];
@@ -129,6 +134,8 @@ function editTask (taskIdEl){
     //get contetnt from task name and type
     var taskName = taskSelected.querySelector("h3.task-name").textContent;
     var taskType = taskSelected.querySelector("span.task-type").textContent;
+    console.log(taskName);
+    console.log(taskType)
 
     //obtain the values
     document.querySelector("input[name='task-name']").value = taskName;
@@ -150,5 +157,27 @@ function completeEditTask (taskName, taskType, taskId){
     document.querySelector("#save-task").textContent = "Add Task";
 }
 
+function taskStatusChangeHandler (event){
+    
+//get the taskID
+var taskId = event.target.getAttribute('data-task-id');
+
+//get current selected options value and convert to Lowercase
+var statusValue = event.target.value.toLowerCase();
+
+//find parent task item based on the ID
+var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+//if statement to place task in appropriate area
+if (statusValue === 'to do'){
+    taskToDo.appendChild(taskSelected);
+} else if (statusValue === 'in-progress') {
+    taskInProgress.appendChild(taskSelected);
+} else if (statusValue === 'completed'){
+    completedTasks.appendChild(taskSelected);
+}
+}
+
 formEl.addEventListener("submit", taskForm)
-pageContent.addEventListener("click", taskButtonHandler)
+pageContent.addEventListener("click", taskButtonHandler);
+pageContent.addEventListener('change', taskStatusChangeHandler)
