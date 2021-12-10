@@ -7,6 +7,8 @@ var completedTasks = document.querySelector('#tasks-completed')
 var taskID = 0;
 //selected kanban board 
 var pageContent = document.querySelector('#page-content')
+//tasks array
+var tasks = [];
 
 
 function taskForm (event){    
@@ -33,7 +35,8 @@ completeEditTask(taskNameInput, taskTypeInput, taskId)
     //package the data as an object
 var taskDataObj = {
     name: taskNameInput, 
-    type: taskTypeInput
+    type: taskTypeInput,
+    status: 'to do'
 };
 createTask(taskDataObj)
 }
@@ -62,8 +65,14 @@ listItem.appendChild(taskActions)
 //add entire list item to list
 taskToDo.appendChild(listItem);
 
+//add id to the object
+taskDataObj.id = taskID; 
+tasks.push(taskDataObj)
+
+console.log(taskDataObj)
 //increase the task counter for unique ID
 taskID++;
+
 }
 
 function createTaskAction (taskID){
@@ -127,6 +136,19 @@ if (targetEl.matches(".delete-btn")){
 function deleteTask (taskIdEl){
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskIdEl + "']")
     taskSelected.remove();
+
+    //create new array to hold updated list of tasks
+    var updatedTasksArray = [];
+
+    //loop thru current tasks
+    for (var i = 0; i<tasks.length; i++){
+        // if task[i].id doesnt match the value of taskID, keep that task and push into the new array
+        if (tasks[i].id !== parseInt(taskId)){
+            updatedTasksArray.push(tasks[i]);
+        }
+    }
+    //reassign task array to the updatedTaskArray
+    tasks = updatedTaskArray
 };
 
 function editTask (taskIdEl){
@@ -153,6 +175,14 @@ function completeEditTask (taskName, taskType, taskId){
     taskSelected.querySelector("h3.task-name").textContent = taskName;
     taskSelected.querySelector("span.task-type").textContent = taskType;
 
+    //loop through the task array and task object with new content
+    for (var i=0; i<tasks.length; i++){
+        if (tasks[i].id === parseInt(taskId)){
+            tasks[i].name = taskName; 
+            tasks[i].type = taskType;
+        }
+    };
+
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
 }
@@ -175,6 +205,14 @@ if (statusValue === 'to do'){
     taskInProgress.appendChild(taskSelected);
 } else if (statusValue === 'completed'){
     completedTasks.appendChild(taskSelected);
+}
+//update task in task array
+for (var i = 0; i<tasks.length; i++){
+    if(tasks[i].id === parseInt(taskId)){
+        tasks[i].status = statusValue;
+    }
+
+    console.log (tasks)
 }
 }
 
